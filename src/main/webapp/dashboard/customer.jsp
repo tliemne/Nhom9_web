@@ -154,12 +154,14 @@
 													data-email="${customer.customerEmail}">
 													<i class="ri-pencil-fill"></i>
 												</button>
-												<button type="button" class="btn btn-danger deleteCustomerBtn"
+												<button type="button"
+													class="btn btn-danger deleteCustomerBtn"
 													data-bs-toggle="modal"
 													data-bs-target="#deleteCustomerModal"
 													data-customer-id="${customer.customerId}">
 													<i class="ri-delete-bin-5-fill"></i>
-												</button>
+												</button> <!-- phân quyền  -->
+												
 											</td>
 										</tr>
 									</c:forEach>
@@ -408,6 +410,7 @@
 																class="form-control" id="editUsername" name="username"
 																placeholder="Nhập tên đăng nhập">
 														</div>
+														<span class="error-message text-danger small"></span>
 													</div>
 
 													<div class="col-md-12">
@@ -419,6 +422,7 @@
 																class="form-control" id="editPassword" name="password"
 																placeholder="Nhập mật khẩu">
 														</div>
+														<span class="error-message text-danger small"></span>
 													</div>
 
 													<div class="col-md-12">
@@ -430,6 +434,7 @@
 																class="form-control" id="editCustomerName"
 																name="customerName" placeholder="Nhập họ tên">
 														</div>
+														<span class="error-message text-danger small"></span>
 													</div>
 
 													<div class="col-md-12">
@@ -443,6 +448,7 @@
 																<option value="Nữ">Nữ</option>
 															</select>
 														</div>
+
 													</div>
 
 													<div class="col-md-12">
@@ -454,6 +460,7 @@
 																class="form-control" id="editCustomerDate"
 																name="customerDate">
 														</div>
+														<span class="error-message text-danger small"></span>
 													</div>
 
 													<div class="col-md-12">
@@ -465,6 +472,7 @@
 																class="form-control" id="editCustomerAddress"
 																name="customerAddress" placeholder="Nhập địa chỉ">
 														</div>
+														<span class="error-message text-danger small"></span>
 													</div>
 
 													<div class="col-md-12">
@@ -477,6 +485,7 @@
 																name="customerMobiphone"
 																placeholder="Nhập số điện thoại">
 														</div>
+														<span class="error-message text-danger small"></span>
 													</div>
 
 													<div class="col-md-12">
@@ -487,6 +496,7 @@
 																class="form-control" id="editCustomerEmail"
 																name="customerEmail" placeholder="Nhập email">
 														</div>
+														<span class="error-message text-danger small"></span>
 													</div>
 												</div>
 											</div>
@@ -524,10 +534,7 @@
 											</div>
 
 											<div class="modal-body px-4 pt-4">
-												<p>
-													Bạn có chắc chắn muốn xóa tài khoản 
-													không?
-												</p>
+												<p>Bạn có chắc chắn muốn xóa tài khoản không?</p>
 												<!-- Input ẩn để gửi customerId cần xóa -->
 												<input type="hidden" name="customerId" id="deleteCustomerId"
 													value="">
@@ -693,6 +700,7 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
   document.getElementById('editCustomerMobiphone').value = customerMobiphone || '';
   document.getElementById('editCustomerEmail').value = customerEmail || '';
 });</script>
+	<!-- js chức năng xóa -->
 	<script>
 	document.querySelectorAll('.deleteCustomerBtn').forEach(button => {
 		  button.addEventListener('click', function () {
@@ -701,6 +709,73 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
 		  });
 		});
 </script>
+	<!-- js điều kiện của sửa -->
+	<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector('#editCustomerModal form');
+
+    form.addEventListener('submit', function (event) {
+      let isValid = true;
+
+      // Xóa thông báo lỗi cũ
+      document.querySelectorAll('#editCustomerModal .error-message').forEach(span => {
+        span.textContent = '';
+      });
+
+      // Lấy giá trị các ô nhập
+      const username = document.getElementById('editUsername');
+      const password = document.getElementById('editPassword');
+      const name = document.getElementById('editCustomerName');
+      const date = document.getElementById('editCustomerDate');
+      const address = document.getElementById('editCustomerAddress');
+      const phone = document.getElementById('editCustomerMobiphone');
+      const email = document.getElementById('editCustomerEmail');
+
+      // Kiểm tra không để trống
+      if (username.value.trim() === '') {
+        username.parentElement.parentElement.querySelector('.error-message').textContent = 'Tên đăng nhập không được để trống';
+        isValid = false;
+      }
+
+      if (password.value.trim().length < 6) {
+        password.parentElement.parentElement.querySelector('.error-message').textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+        isValid = false;
+      }
+
+      if (name.value.trim() === '') {
+        name.parentElement.parentElement.querySelector('.error-message').textContent = 'Họ tên không được để trống';
+        isValid = false;
+      }
+
+      if (date.value.trim() === '') {
+        date.parentElement.parentElement.querySelector('.error-message').textContent = 'Ngày sinh không được để trống';
+        isValid = false;
+      }
+
+      if (address.value.trim() === '') {
+        address.parentElement.parentElement.querySelector('.error-message').textContent = 'Địa chỉ không được để trống';
+        isValid = false;
+      }
+
+      if (!/^\d{9,11}$/.test(phone.value.trim())) {
+        phone.parentElement.parentElement.querySelector('.error-message').textContent = 'Số điện thoại không hợp lệ (chỉ chứa số và từ 9-11 chữ số)';
+        isValid = false;
+      }
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email.value.trim())) {
+        email.parentElement.parentElement.querySelector('.error-message').textContent = 'Email không hợp lệ';
+        isValid = false;
+      }
+
+      // Nếu có lỗi -> không cho submit
+      if (!isValid) {
+        event.preventDefault();
+      }
+    });
+  });
+</script>
+
 </body>
 
 </html>

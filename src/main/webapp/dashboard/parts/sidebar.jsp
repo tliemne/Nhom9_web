@@ -14,7 +14,7 @@
       </li><!-- End Dashboard Nav -->
 
 <li class="nav-item">
-        	<a class="nav-link collapsed"  href="${pageContext.request.contextPath}/userController">
+        	<a class="nav-link collapsed"  href="${pageContext.request.contextPath}/quanly-tk">
           	<i class="bi bi-menu-button-wide"></i>
           	<span>Quản lý người dùng</span>
         	</a>

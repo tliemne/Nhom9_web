@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.*;
+import java.sql.Date;
 
 import model.Customer;
 
@@ -35,7 +36,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 				String passWord = rs.getString("password");
 				String customerName = rs.getString("customername");
 				String customerGender = rs.getString("customergender");
-				java.sql.Date customerDate = rs.getDate("customerdate");
+				Date customerDate = rs.getDate("customerdate");
 				String customerAddress = rs.getString("customeraddress");
 				String customerMobiphone = rs.getString("customermobiphone");
 				String customerEmail = rs.getString("customeremail");
@@ -51,11 +52,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 		}
 		return ketQua;
 	}
-
-	private java.sql.Date Date(Date customerDate) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	
 
 	@Override
 	public Customer selectById(Customer t) {
@@ -85,7 +82,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 				String customerAddress = rs.getString("customeraddress");
 				String customerMobiphone = rs.getString("customermobiphone");
 				String customerEmail = rs.getString("customeremail");
-				Customer customer = new Customer(customerId, userName, passWord, customerName,customerGender, Date(customerDate),customerAddress,customerMobiphone,customerEmail);
+				Customer customer = new Customer(customerId, userName, passWord, customerName,customerGender, customerDate,customerAddress,customerMobiphone,customerEmail);
 				break;
 			}
 			
@@ -105,7 +102,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 			Connection con = JDBCUtil.getConnection();
 			
 			// Bước 2: tạo ra đối tượng statement
-			String sql = "INSERT INTO customer (customerid, , username, password,customername,customergender,customerdate,customeraddress,customermobiphone,customeremail) "+
+			String sql = "INSERT INTO customer (customerid, username, password,customername,customergender,customerdate,customeraddress,customermobiphone,customeremail) "+
 					" VALUES (?,?,?,?,?,?,?,?,?)";
 			
 			PreparedStatement st = con.prepareStatement(sql);
@@ -188,52 +185,69 @@ public class CustomerDAO implements DAOInterface<Customer>{
 
 	@Override
 	public int update(Customer t) {
-		int ketQua = 0;
-		try {
-			// Bước 1: tạo kết nối đến CSDL
-			Connection con = JDBCUtil.getConnection();
-			
-			// Bước 2: tạo ra đối tượng statement
-			String sql = "UPDATE customer "+
-					 " SET " +
-					 " customerid=?"+
-					 ", username=?"+
-					 ", password=?"+
-					 ", customername=?"+
-					 ", customergender=?"+
-					 ", customerdate=?"+
-					 ", customeraddress=?"+
-					 ", customermobiphone=?"+
-					 ", customeremail=?"+
-					 " WHERE customerid=?";
-			
-			PreparedStatement st = con.prepareStatement(sql);
-			st.setString(1, t.getCustomerId());
-			st.setString(2, t.getUsername());
-			st.setString(3, t.getPassword());
-			st.setString(4, t.getCustomerName());
-			st.setString(5, t.getCustomerGender());
-			st.setDate(6, t.getCustomerDate());
-			st.setString(7, t.getCustomerAddress());
-			st.setString(8, t.getCustomerMobiphone());
-			st.setString(9, t.getCustomerEmail());
-			// Bước 3: thực thi câu lệnh SQL
+	    int ketQua = 0;
+	    try {
+	        Connection con = JDBCUtil.getConnection();
 
-			System.out.println(sql);
-			ketQua = st.executeUpdate();
-			
-			// Bước 4:
-			System.out.println("Bạn đã thực thi: "+ sql);
-			System.out.println("Có "+ ketQua+" dòng bị thay đổi!");
-			
-			// Bước 5:
-			JDBCUtil.closeConnection(con);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return ketQua;
+	        String sql = "UPDATE customer " +
+	                     " SET " +
+	                     " username=?," +
+	                     " password=?," +
+	                     " customername=?," +
+	                     " customergender=?," +
+	                     " customerdate=?," +
+	                     " customeraddress=?," +
+	                     " customermobiphone=?," +
+	                     " customeremail=?" +
+	                     " WHERE customerid=?";
+
+	        PreparedStatement st = con.prepareStatement(sql);
+	        st.setString(1, t.getUsername());
+	        st.setString(2, t.getPassword());
+	        st.setString(3, t.getCustomerName());
+	        st.setString(4, t.getCustomerGender());
+	        st.setDate(5, t.getCustomerDate());
+	        st.setString(6, t.getCustomerAddress());
+	        st.setString(7, t.getCustomerMobiphone());
+	        st.setString(8, t.getCustomerEmail());
+	        st.setString(9, t.getCustomerId()); // điều kiện WHERE
+	        System.out.println(sql);
+	        ketQua = st.executeUpdate();
+
+	        System.out.println("Bạn đã thực thi: " + sql);
+	        System.out.println("Có " + ketQua + " dòng bị thay đổi!");
+
+	        JDBCUtil.closeConnection(con);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return ketQua;
+	}
+
+	public String generateNextCustomerId() {
+	    String nextId = "KH001"; // giá trị mặc định nếu bảng rỗng
+
+	    try {
+	        Connection con = JDBCUtil.getConnection();
+
+	        String sql = "SELECT customerId FROM customer ORDER BY customerId DESC LIMIT 1";
+	        PreparedStatement ps = con.prepareStatement(sql);
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            String lastId = rs.getString("customerId"); // VD: KH050
+	            // Cắt bỏ 2 ký tự đầu ("KH"), giữ lại phần số
+	            int nextNum = Integer.parseInt(lastId.substring(2)) + 1;
+	            nextId = String.format("KH%03d", nextNum); // Format lại KH### 
+	        }
+
+	        JDBCUtil.closeConnection(con);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        System.out.println("Lỗi khi sinh tài khoản mới!");
+	    }
+
+	    return nextId;
 	}
 	public static void main(String[] args) {
 		CustomerDAO bd = new CustomerDAO();

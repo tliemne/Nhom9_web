@@ -565,7 +565,7 @@
 													<i class="ri-close-line"></i> Hủy
 												</button>
 												<button type="submit" class="btn btn-danger">
-													<i class="ri-delete-bin-6-line"></i> Xóa
+													<i class="ri-delete-bin-6-line"></i>Đồng ý
 												</button>
 											</div>
 										</form>

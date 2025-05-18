@@ -69,6 +69,20 @@
 
 	<!-- ======= Sidebar ======= -->
 	<jsp:include page="parts/sidebar.jsp" />
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+		  const modalMessageElem = document.getElementById('modalMessage');
+		  const message = modalMessageElem ? modalMessageElem.textContent.trim() : "";
+		  if(message) {
+		    var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+		    messageModal.show();
+	
+		    // Bạn có thể dùng Ajax để gửi yêu cầu xóa message khỏi session ở server nếu muốn.
+		    // Hoặc bạn có thể xóa message trong lần gọi servlet tiếp theo (thường là sau khi reload trang).
+		  }
+		});
+		
+	</script>
 
 	<!-- ======= Nội dung chính của trang ======= -->
 	<main id="main" class="main">
@@ -127,7 +141,7 @@
 											<%-- 	<td>${customer.customerMobiphone}</td>
 											<td>${customer.customerEmail}</td> --%>
 											<td>
-												<!-- Nút xem chi tiết 1 NCC -->
+												<!-- Nút xem chi tiết 1 tài khoản -->
 												<button type="button" class="btn btn-primary"
 													data-bs-toggle="modal" data-bs-target="#viewCustomerModal"
 													data-id="${customer.customerId}"
@@ -139,8 +153,10 @@
 													data-address="${customer.customerAddress}"
 													data-phone="${customer.customerMobiphone}"
 													data-email="${customer.customerEmail}">
+
 													<i class="ri-eye-fill"></i>
 												</button>
+												<!-- Nút sửa 1 tài khoản -->
 												<button type="button" class="btn btn-warning"
 													data-bs-toggle="modal" data-bs-target="#editCustomerModal"
 													data-id="${customer.customerId}"
@@ -152,23 +168,24 @@
 													data-address="${customer.customerAddress}"
 													data-phone="${customer.customerMobiphone}"
 													data-email="${customer.customerEmail}">
+
 													<i class="ri-pencil-fill"></i>
 												</button>
+												<!-- Nút xóa 1 tài khoản -->
 												<button type="button"
 													class="btn btn-danger deleteCustomerBtn"
 													data-bs-toggle="modal"
 													data-bs-target="#deleteCustomerModal"
 													data-customer-id="${customer.customerId}">
 													<i class="ri-delete-bin-5-fill"></i>
-												</button> <!-- phân quyền  -->
-												
+												</button>
 											</td>
 										</tr>
 									</c:forEach>
 								</tbody>
 							</table>
-							<!-- End Table with stripped rows -->
-							<!-- Modal Thêm Khách Hàng -->
+							
+							<!-- Modal Thêm tài khoản -->
 							<div class="modal fade" id="addCustomerModal" tabindex="-1"
 								aria-labelledby="addCustomerModalLabel" aria-hidden="true">
 								<div class="modal-dialog modal-lg">
@@ -191,7 +208,7 @@
 
 
 													<!-- username -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="username" class="form-label">Tên đăng
 															nhập</label> <input type="text" class="form-control"
 															id="username" name="username"
@@ -200,7 +217,7 @@
 													</div>
 
 													<!-- password -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="password" class="form-label">Mật khẩu</label>
 														<input type="password" class="form-control" id="password"
 															name="password"
@@ -209,7 +226,7 @@
 													</div>
 
 													<!-- customerName -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="customerName" class="form-label">Tên
 															khách hàng</label> <input type="text" class="form-control"
 															id="customerName" name="customerName"
@@ -218,7 +235,7 @@
 													</div>
 
 													<!-- customerGender -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="customerGender" class="form-label">Giới
 															tính</label> <select class="form-select" id="customerGender"
 															name="customerGender">
@@ -231,7 +248,7 @@
 													</div>
 
 													<!-- customerDate -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="customerDate" class="form-label">Ngày
 															sinh</label> <input type="date" class="form-control"
 															id="customerDate" name="customerDate">
@@ -239,7 +256,7 @@
 													</div>
 
 													<!-- customerAddress -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="customerAddress" class="form-label">Địa
 															chỉ</label> <input type="text" class="form-control"
 															id="customerAddress" name="customerAddress"
@@ -248,7 +265,7 @@
 													</div>
 
 													<!-- customerMobiphone -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="customerMobiphone" class="form-label">Số
 															điện thoại</label> <input type="text" class="form-control"
 															id="customerMobiphone" name="customerMobiphone"
@@ -257,7 +274,7 @@
 													</div>
 
 													<!-- customerEmail -->
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="customerEmail" class="form-label">Email</label>
 														<input type="email" class="form-control"
 															id="customerEmail" name="customerEmail"
@@ -282,7 +299,7 @@
 									</div>
 								</div>
 							</div>
-							<!-- Modal Xem Chi Tiết Khách Hàng -->
+							<!-- Modal Xem Chi tài khoản -->
 							<div class="modal fade" id="viewCustomerModal" tabindex="-1"
 								aria-labelledby="viewCustomerModalLabel" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered modal-lg">
@@ -297,7 +314,7 @@
 
 										<div class="modal-body px-4 pt-4">
 											<div class="row g-3">
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Mã tài khoản</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -305,7 +322,7 @@
 															class="form-control" id="viewCustomerId" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Tên đăng nhập</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -313,7 +330,7 @@
 															class="form-control" id="viewCustomerUsername" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Mật khẩu</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -321,7 +338,7 @@
 															class="form-control" id="viewCustomerPassword" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Họ và tên</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -329,7 +346,7 @@
 															class="form-control" id="viewCustomerName" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Giới tính</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -337,7 +354,7 @@
 															class="form-control" id="viewCustomerGender" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Ngày sinh</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -345,7 +362,7 @@
 															class="form-control" id="viewCustomerDate" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Địa chỉ</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -353,7 +370,7 @@
 															class="form-control" id="viewCustomerAddress" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Số điện thoại</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -361,7 +378,7 @@
 															class="form-control" id="viewCustomerPhone" readonly>
 													</div>
 												</div>
-												<div class="col-md-12">
+												<div class="col-md-6">
 													<label class="form-label">Email</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
@@ -369,6 +386,7 @@
 															class="form-control" id="viewCustomerEmail" readonly>
 													</div>
 												</div>
+
 											</div>
 										</div>
 
@@ -381,7 +399,7 @@
 									</div>
 								</div>
 							</div>
-							<!-- Modal Sửa Thông Tin Khách Hàng -->
+							<!-- Modal Sửa Thông Tin người dùng -->
 							<div class="modal fade" id="editCustomerModal" tabindex="-1"
 								aria-labelledby="editCustomerModalLabel" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered modal-lg">
@@ -401,7 +419,7 @@
 													<input type="hidden" name="action" value="edit" /> <input
 														type="hidden" id="editCustomerId" name="customerId" />
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editUsername" class="form-label">Tên
 															đăng nhập</label>
 														<div class="input-group">
@@ -413,7 +431,7 @@
 														<span class="error-message text-danger small"></span>
 													</div>
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editPassword" class="form-label">Mật
 															khẩu</label>
 														<div class="input-group">
@@ -425,7 +443,7 @@
 														<span class="error-message text-danger small"></span>
 													</div>
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editCustomerName" class="form-label">Họ
 															tên</label>
 														<div class="input-group">
@@ -437,7 +455,7 @@
 														<span class="error-message text-danger small"></span>
 													</div>
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editCustomerGender" class="form-label">Giới
 															tính</label>
 														<div class="input-group">
@@ -451,7 +469,7 @@
 
 													</div>
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editCustomerDate" class="form-label">Ngày
 															sinh</label>
 														<div class="input-group">
@@ -463,7 +481,7 @@
 														<span class="error-message text-danger small"></span>
 													</div>
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editCustomerAddress" class="form-label">Địa
 															chỉ</label>
 														<div class="input-group">
@@ -475,7 +493,7 @@
 														<span class="error-message text-danger small"></span>
 													</div>
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editCustomerMobiphone" class="form-label">Số
 															điện thoại</label>
 														<div class="input-group">
@@ -488,7 +506,7 @@
 														<span class="error-message text-danger small"></span>
 													</div>
 
-													<div class="col-md-12">
+													<div class="col-md-6">
 														<label for="editCustomerEmail" class="form-label">Email</label>
 														<div class="input-group">
 															<span class="input-group-text"><i
@@ -498,6 +516,7 @@
 														</div>
 														<span class="error-message text-danger small"></span>
 													</div>
+
 												</div>
 											</div>
 
@@ -553,6 +572,33 @@
 									</div>
 								</div>
 							</div>
+							<!-- Modal thông báo thành công thêm, sửa, xóa -->
+							<!-- Modal Thông báo -->
+							<div class="modal fade" id="messageModal" tabindex="-1"
+								aria-labelledby="messageModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content">
+										<div class="modal-header bg-success text-white">
+											<h5 class="modal-title" id="messageModalLabel">Thông báo</h5>
+											<button type="button" class="btn-close btn-close-white"
+												data-bs-dismiss="modal" aria-label="Đóng"></button>
+										</div>
+										<div class="modal-body">
+											<p id="modalMessage">${message}</p>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-success"
+												data-bs-dismiss="modal">Đóng</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
 		</section>
 	</main>
 	<!-- End #main -->
@@ -597,8 +643,9 @@
 
 	<!-- Template Main JS File -->
 	<script src="${pageContext.request.contextPath}/assets/adjs/main.js"></script>
+	<!-- js thêm tài khoản -->
 	<script>
-document.addEventListener("DOMContentLoaded", function () {
+	document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("addCustomerForm");
 
     form.addEventListener("submit", function (e) {
@@ -657,6 +704,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+<!-- js xem thông tin -->
 	<script>
 	 const viewCustomerModal = document.getElementById('viewCustomerModal');
 	    viewCustomerModal.addEventListener('show.bs.modal', function (event) {
@@ -673,7 +721,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	        document.getElementById('viewCustomerEmail').value = button.getAttribute('data-email');
 	    });
 </script>
+<!-- js đẩy dữ liệu lên form sửa -->
 	<script>
+	
 const editCustomerModal = document.getElementById('editCustomerModal');
 editCustomerModal.addEventListener('show.bs.modal', function (event) {
   const button = event.relatedTarget; // Nút bấm gọi modal
@@ -688,7 +738,7 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
   const customerAddress = button.getAttribute('data-address');
   const customerMobiphone = button.getAttribute('data-phone');
   const customerEmail = button.getAttribute('data-email');
-
+ 
   // Gán dữ liệu vào các input trong modal
   document.getElementById('editCustomerId').value = customerId || '';
   document.getElementById('editUsername').value = username || '';
@@ -699,6 +749,7 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
   document.getElementById('editCustomerAddress').value = customerAddress || '';
   document.getElementById('editCustomerMobiphone').value = customerMobiphone || '';
   document.getElementById('editCustomerEmail').value = customerEmail || '';
+ 
 });</script>
 	<!-- js chức năng xóa -->
 	<script>
@@ -711,69 +762,72 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
 </script>
 	<!-- js điều kiện của sửa -->
 	<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector('#editCustomerModal form');
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector('#editCustomerModal form');
 
-    form.addEventListener('submit', function (event) {
-      let isValid = true;
+  form.addEventListener('submit', function (event) {
+    let isValid = true;
 
-      // Xóa thông báo lỗi cũ
-      document.querySelectorAll('#editCustomerModal .error-message').forEach(span => {
-        span.textContent = '';
-      });
-
-      // Lấy giá trị các ô nhập
-      const username = document.getElementById('editUsername');
-      const password = document.getElementById('editPassword');
-      const name = document.getElementById('editCustomerName');
-      const date = document.getElementById('editCustomerDate');
-      const address = document.getElementById('editCustomerAddress');
-      const phone = document.getElementById('editCustomerMobiphone');
-      const email = document.getElementById('editCustomerEmail');
-
-      // Kiểm tra không để trống
-      if (username.value.trim() === '') {
-        username.parentElement.parentElement.querySelector('.error-message').textContent = 'Tên đăng nhập không được để trống';
-        isValid = false;
-      }
-
-      if (password.value.trim().length < 6) {
-        password.parentElement.parentElement.querySelector('.error-message').textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
-        isValid = false;
-      }
-
-      if (name.value.trim() === '') {
-        name.parentElement.parentElement.querySelector('.error-message').textContent = 'Họ tên không được để trống';
-        isValid = false;
-      }
-
-      if (date.value.trim() === '') {
-        date.parentElement.parentElement.querySelector('.error-message').textContent = 'Ngày sinh không được để trống';
-        isValid = false;
-      }
-
-      if (address.value.trim() === '') {
-        address.parentElement.parentElement.querySelector('.error-message').textContent = 'Địa chỉ không được để trống';
-        isValid = false;
-      }
-
-      if (!/^\d{9,11}$/.test(phone.value.trim())) {
-        phone.parentElement.parentElement.querySelector('.error-message').textContent = 'Số điện thoại không hợp lệ (chỉ chứa số và từ 9-11 chữ số)';
-        isValid = false;
-      }
-
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email.value.trim())) {
-        email.parentElement.parentElement.querySelector('.error-message').textContent = 'Email không hợp lệ';
-        isValid = false;
-      }
-
-      // Nếu có lỗi -> không cho submit
-      if (!isValid) {
-        event.preventDefault();
-      }
+    // Xóa thông báo lỗi cũ
+    document.querySelectorAll('#editCustomerModal .error-message').forEach(span => {
+      span.textContent = '';
     });
+
+    // Lấy giá trị các ô nhập
+    const username = document.getElementById('editUsername');
+    const password = document.getElementById('editPassword');
+    const name = document.getElementById('editCustomerName');
+    const date = document.getElementById('editCustomerDate');
+    const address = document.getElementById('editCustomerAddress');
+    const phone = document.getElementById('editCustomerMobiphone');
+    const email = document.getElementById('editCustomerEmail');
+  
+
+    // Kiểm tra không để trống
+    if (username.value.trim() === '') {
+      username.parentElement.parentElement.querySelector('.error-message').textContent = 'Tên đăng nhập không được để trống';
+      isValid = false;
+    }
+
+    if (password.value.trim().length < 6) {
+      password.parentElement.parentElement.querySelector('.error-message').textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+      isValid = false;
+    }
+
+    if (name.value.trim() === '') {
+      name.parentElement.parentElement.querySelector('.error-message').textContent = 'Họ tên không được để trống';
+      isValid = false;
+    }
+
+    if (date.value.trim() === '') {
+      date.parentElement.parentElement.querySelector('.error-message').textContent = 'Ngày sinh không được để trống';
+      isValid = false;
+    }
+
+    if (address.value.trim() === '') {
+      address.parentElement.parentElement.querySelector('.error-message').textContent = 'Địa chỉ không được để trống';
+      isValid = false;
+    }
+
+    if (!/^\d{9,11}$/.test(phone.value.trim())) {
+      phone.parentElement.parentElement.querySelector('.error-message').textContent = 'Số điện thoại không hợp lệ (chỉ chứa số và từ 9-11 chữ số)';
+      isValid = false;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value.trim())) {
+      email.parentElement.parentElement.querySelector('.error-message').textContent = 'Email không hợp lệ';
+      isValid = false;
+    }
+
+   
+
+    // Nếu có lỗi -> không cho submit
+    if (!isValid) {
+      event.preventDefault();
+    }
   });
+});
 </script>
 
 </body>

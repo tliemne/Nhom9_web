@@ -40,7 +40,8 @@ public class CustomerDAO implements DAOInterface<Customer>{
 				String customerAddress = rs.getString("customeraddress");
 				String customerMobiphone = rs.getString("customermobiphone");
 				String customerEmail = rs.getString("customeremail");
-				Customer customer = new Customer(customerId, userName, passWord, customerName, customerGender, customerDate, customerAddress, customerMobiphone, customerEmail);
+				String isAdmin = rs.getString("customeradmin");
+				Customer customer = new Customer(customerId, userName, passWord, customerName, customerGender, customerDate, customerAddress, customerMobiphone, customerEmail,isAdmin);
 				ketQua.add(customer);
 				
 			}
@@ -62,7 +63,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 			Connection con = JDBCUtil.getConnection();
 			
 			// Bước 2: Tạo ra đối tượng statement
-			String sql = "SELECT * FROM brand WHERE customerid=?";
+			String sql = "SELECT * FROM customer WHERE customerid=?";
 			PreparedStatement st = con.prepareStatement(sql);
 			st.setString(1, t.getCustomerId());
 			
@@ -82,7 +83,8 @@ public class CustomerDAO implements DAOInterface<Customer>{
 				String customerAddress = rs.getString("customeraddress");
 				String customerMobiphone = rs.getString("customermobiphone");
 				String customerEmail = rs.getString("customeremail");
-				Customer customer = new Customer(customerId, userName, passWord, customerName,customerGender, customerDate,customerAddress,customerMobiphone,customerEmail);
+				String isAdmin = rs.getString("customeradmin");
+				Customer customer = new Customer(customerId, userName, passWord, customerName,customerGender, customerDate,customerAddress,customerMobiphone,customerEmail,isAdmin);
 				break;
 			}
 			
@@ -199,6 +201,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 	                     " customeraddress=?," +
 	                     " customermobiphone=?," +
 	                     " customeremail=?" +
+	                    
 	                     " WHERE customerid=?";
 
 	        PreparedStatement st = con.prepareStatement(sql);
@@ -210,6 +213,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 	        st.setString(6, t.getCustomerAddress());
 	        st.setString(7, t.getCustomerMobiphone());
 	        st.setString(8, t.getCustomerEmail());
+	       
 	        st.setString(9, t.getCustomerId()); // điều kiện WHERE
 	        System.out.println(sql);
 	        ketQua = st.executeUpdate();

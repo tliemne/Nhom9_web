@@ -13,13 +13,14 @@ public class Customer {
 	private String customerAddress;
 	private String customerMobiphone;
 	private String customerEmail;
+	private String isAdmin;
 	
 	public Customer() {
 		super();
 	}
 
 	public Customer(String customerId, String username, String password, String customerName, String customerGender,
-			Date customerDate, String customerAddress, String customerMobiphone, String customerEmail) {
+			Date customerDate, String customerAddress, String customerMobiphone, String customerEmail,String isAdmin) {
 		super();
 		this.customerId = customerId;
 		this.username = username;
@@ -30,6 +31,7 @@ public class Customer {
 		this.customerAddress = customerAddress;
 		this.customerMobiphone = customerMobiphone;
 		this.customerEmail = customerEmail;
+		this.isAdmin = isAdmin;
 	}
 
 	public String getCustomerId() {
@@ -103,7 +105,13 @@ public class Customer {
 	public void setCustomerEmail(String customerEmail) {
 		this.customerEmail = customerEmail;
 	}
+	 public String getAdmin() {
+	        return isAdmin;
+	    }
 
+	    public void setAdmin(String isAdmin) {
+	        this.isAdmin = isAdmin;
+	    }
 	@Override
 	public int hashCode() {
 		return Objects.hash(customerId);

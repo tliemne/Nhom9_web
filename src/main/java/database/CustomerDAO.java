@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.*;
 import java.sql.Date;
 
@@ -102,21 +105,27 @@ public class CustomerDAO implements DAOInterface<Customer>{
 		try {
 			// Bước 1: tạo kết nối đến CSDL
 			Connection con = JDBCUtil.getConnection();
+			String rawPassword = t.getPassword();
+	        if (rawPassword != null && !rawPassword.startsWith("$2a$")) {
+	            String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+	            t.setPassword(hashedPassword);
+	        }
 			
 			// Bước 2: tạo ra đối tượng statement
-			String sql = "INSERT INTO customer (customerid, username, password,customername,customergender,customerdate,customeraddress,customermobiphone,customeremail) "+
-					" VALUES (?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO customer (customerid, username, password,customername,customergender,customerdate,customeraddress,customermobiphone,customeremail,customeradmin) "+
+					" VALUES (?,?,?,?,?,?,?,?,?,?)";
 			
 			PreparedStatement st = con.prepareStatement(sql);
 			st.setString(1, t.getCustomerId());
 			st.setString(2, t.getUsername());
-			st.setString(3, t.getPassword());
+			st.setString(3,t.getPassword());
 			st.setString(4, t.getCustomerName());
 			st.setString(5, t.getCustomerGender());
 			st.setDate(6, t.getCustomerDate());
 			st.setString(7, t.getCustomerAddress());
 			st.setString(8, t.getCustomerMobiphone());
 			st.setString(9, t.getCustomerEmail());
+			st.setString(10,t.getIsAdmin());
 			
 			// Bước 3: thực thi câu lệnh SQL
 			ketQua = st.executeUpdate();
@@ -190,7 +199,11 @@ public class CustomerDAO implements DAOInterface<Customer>{
 	    int ketQua = 0;
 	    try {
 	        Connection con = JDBCUtil.getConnection();
-
+	        String rawPassword = t.getPassword();
+	        if (rawPassword != null && !rawPassword.startsWith("$2a$")) {
+	            String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+	            t.setPassword(hashedPassword);
+	        }
 	        String sql = "UPDATE customer " +
 	                     " SET " +
 	                     " username=?," +
@@ -200,21 +213,23 @@ public class CustomerDAO implements DAOInterface<Customer>{
 	                     " customerdate=?," +
 	                     " customeraddress=?," +
 	                     " customermobiphone=?," +
-	                     " customeremail=?" +
+	                     " customeremail=?," +
+	                     " customeradmin=?" +
 	                    
 	                     " WHERE customerid=?";
 
 	        PreparedStatement st = con.prepareStatement(sql);
 	        st.setString(1, t.getUsername());
-	        st.setString(2, t.getPassword());
+	       st.setString(2,t.getPassword());
 	        st.setString(3, t.getCustomerName());
 	        st.setString(4, t.getCustomerGender());
 	        st.setDate(5, t.getCustomerDate());
 	        st.setString(6, t.getCustomerAddress());
 	        st.setString(7, t.getCustomerMobiphone());
 	        st.setString(8, t.getCustomerEmail());
+	        st.setString(9,t.getIsAdmin());
 	       
-	        st.setString(9, t.getCustomerId()); // điều kiện WHERE
+	        st.setString(10, t.getCustomerId()); // điều kiện WHERE
 	        System.out.println(sql);
 	        ketQua = st.executeUpdate();
 
@@ -253,13 +268,36 @@ public class CustomerDAO implements DAOInterface<Customer>{
 
 	    return nextId;
 	}
-	public static void main(String[] args) {
-		CustomerDAO bd = new CustomerDAO();
-		ArrayList<Customer> kq = bd.selectAll();
-		for (Customer cs : kq) {
-			System.out.println(cs.toString());
-		}
+	
 
-		 
+	// Hàm mã hóa lại mật khẩu cho tất cả khách hàng nếu chưa được mã hóa
+	public void encryptExistingPasswords() {
+	    ArrayList<Customer> customers = this.selectAll();
+	    for (Customer customer : customers) {
+	        String currentPassword = customer.getPassword();
+	        System.out.println("Tài khoản: " + customer.getUsername());
+	        System.out.println("Mật khẩu hiện tại: " + currentPassword);
+
+	        if (currentPassword != null && !currentPassword.startsWith("$2a$")) {
+	            String hashedPassword = BCrypt.hashpw(currentPassword, BCrypt.gensalt());
+	            System.out.println("Mật khẩu sau mã hóa: " + hashedPassword);
+
+	            customer.setPassword(hashedPassword);
+	            int kq = this.update(customer);  // update không mã hóa nữa
+	            System.out.println("Kết quả update: " + kq);
+	        } else {
+	            System.out.println("Bỏ qua vì mật khẩu đã mã hóa hoặc null.");
+	        }
+	    }
 	}
-}
+	
+	/*
+	 * public static void main(String[] args) { CustomerDAO bd = new CustomerDAO();
+	 * 
+	 * // Mã hóa lại toàn bộ mật khẩu chưa được mã hóa
+	 * bd.encryptExistingPasswords();
+	 * 
+	 * // Kiểm tra lại danh sách khách hàng ArrayList<Customer> kq = bd.selectAll();
+	 * for (Customer cs : kq) { System.out.println(cs.toString()); } }
+	 */
+	}

@@ -105,11 +105,11 @@ public class Customer {
 	public void setCustomerEmail(String customerEmail) {
 		this.customerEmail = customerEmail;
 	}
-	 public String getAdmin() {
+	 public String getIsAdmin() {
 	        return isAdmin;
 	    }
 
-	    public void setAdmin(String isAdmin) {
+	    public void setIsAdmin(String isAdmin) {
 	        this.isAdmin = isAdmin;
 	    }
 	@Override

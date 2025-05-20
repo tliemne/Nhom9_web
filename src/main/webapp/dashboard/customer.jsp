@@ -76,9 +76,6 @@
 		  if(message) {
 		    var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
 		    messageModal.show();
-	
-		    // Bạn có thể dùng Ajax để gửi yêu cầu xóa message khỏi session ở server nếu muốn.
-		    // Hoặc bạn có thể xóa message trong lần gọi servlet tiếp theo (thường là sau khi reload trang).
 		  }
 		});
 		
@@ -116,13 +113,14 @@
 							<!-- Table with stripped rows -->
 							<table class="table datatable">
 								<thead>
-									<tr>
-										<th>Mã người dùng</th>
-										<th>Tên tài khoản</th>
-										<th>Tên khách hàng</th>
-										<th>Giới tính</th>
-										<th>Địa chỉ</th>
-										<th>
+									<tr >
+										<th class="text-center">Mã người dùng</th>
+										<th class="text-center">Tên đăng nhập</th>
+										<th class="text-center">Tên khách hàng</th>
+										<th class="text-center">Giới tính</th>
+										<th class="text-center">Địa chỉ</th>
+										<th class="text-center">Quyền</th>
+										<th class="text-center">
 											<!-- Cột nút action -->
 										</th>
 										<!-- <th data-type="date" data-format="YYYY/DD/MM">Start Date</th> -->
@@ -130,8 +128,8 @@
 								</thead>
 								<tbody>
 									<c:forEach var="customer" items="${listCustomer}">
-										<tr>
-											<td>${customer.customerId}</td>
+										<tr class="text-center">
+											<td >${customer.customerId}</td>
 											<td>${customer.username}</td>
 											<%-- <td>${customer.password}</td> --%>
 											<td>${customer.customerName}</td>
@@ -140,6 +138,7 @@
 											<td>${customer.customerAddress}</td>
 											<%-- 	<td>${customer.customerMobiphone}</td>
 											<td>${customer.customerEmail}</td> --%>
+											<td>${customer.isAdmin}</td>
 											<td>
 												<!-- Nút xem chi tiết 1 tài khoản -->
 												<button type="button" class="btn btn-primary"
@@ -152,11 +151,11 @@
 													data-date="${customer.customerDate}"
 													data-address="${customer.customerAddress}"
 													data-phone="${customer.customerMobiphone}"
-													data-email="${customer.customerEmail}">
+													data-email="${customer.customerEmail}"
+													data-isadmin="${customer.isAdmin}">
 
 													<i class="ri-eye-fill"></i>
-												</button>
-												<!-- Nút sửa 1 tài khoản -->
+												</button> <!-- Nút sửa 1 tài khoản -->
 												<button type="button" class="btn btn-warning"
 													data-bs-toggle="modal" data-bs-target="#editCustomerModal"
 													data-id="${customer.customerId}"
@@ -167,11 +166,10 @@
 													data-date="${customer.customerDate}"
 													data-address="${customer.customerAddress}"
 													data-phone="${customer.customerMobiphone}"
-													data-email="${customer.customerEmail}">
-
+													data-email="${customer.customerEmail}"
+													data-isadmin="${customer.isAdmin}">
 													<i class="ri-pencil-fill"></i>
-												</button>
-												<!-- Nút xóa 1 tài khoản -->
+												</button> <!-- Nút xóa 1 tài khoản -->
 												<button type="button"
 													class="btn btn-danger deleteCustomerBtn"
 													data-bs-toggle="modal"
@@ -184,7 +182,7 @@
 									</c:forEach>
 								</tbody>
 							</table>
-							
+
 							<!-- Modal Thêm tài khoản -->
 							<div class="modal fade" id="addCustomerModal" tabindex="-1"
 								aria-labelledby="addCustomerModalLabel" aria-hidden="true">
@@ -281,6 +279,16 @@
 															placeholder="Nhập email">
 														<div class="invalid-feedback"></div>
 													</div>
+													<div class="col-md-6">
+														<label for="customerAdmin" class="form-label">Phân
+															quyền </label> <select class="form-select" id="customerAdmin"
+															name="customerAdmin">
+															<option value="">Chọn quyền</option>
+															<option value="Admin">Admin</option>
+															<option value="User">User</option>
+														</select>
+														<div class="invalid-feedback"></div>
+													</div>
 
 												</div>
 											</div>
@@ -330,14 +338,14 @@
 															class="form-control" id="viewCustomerUsername" readonly>
 													</div>
 												</div>
-												<div class="col-md-6">
+												<!-- <div class="col-md-6">
 													<label class="form-label">Mật khẩu</label>
 													<div class="input-group">
 														<span class="input-group-text"><i
 															class="ri-lock-line"></i></span> <input type="text"
 															class="form-control" id="viewCustomerPassword" readonly>
 													</div>
-												</div>
+												</div> -->
 												<div class="col-md-6">
 													<label class="form-label">Họ và tên</label>
 													<div class="input-group">
@@ -386,6 +394,15 @@
 															class="form-control" id="viewCustomerEmail" readonly>
 													</div>
 												</div>
+												<div class="col-md-6">
+													<label class="form-label">Quyền</label>
+													<div class="input-group">
+														<span class="input-group-text"><i
+															class="ri-shield-user-line"></i></span> <input type="text"
+															class="form-control" id="viewCustomerAdmin" readonly>
+													</div>
+												</div>
+
 
 											</div>
 										</div>
@@ -464,6 +481,7 @@
 																id="editCustomerGender" name="customerGender">
 																<option value="Nam">Nam</option>
 																<option value="Nữ">Nữ</option>
+																<option value="Khác">Khác</option>
 															</select>
 														</div>
 
@@ -515,6 +533,20 @@
 																name="customerEmail" placeholder="Nhập email">
 														</div>
 														<span class="error-message text-danger small"></span>
+													</div>
+													<div class="col-md-6">
+														<label for="editCustomerAdmin" class="form-label">Phân
+															quyền </label>
+														<div class="input-group">
+															<span class="input-group-text"><i
+																class="ri-shield-user-line"></i></span> <select
+																class="form-select" id="editCustomerAdmin"
+																name="customerAdmin">
+																<option value="Admin">Admin</option>
+																<option value="User">User</option>
+															</select>
+														</div>
+														<span class="error-message text-danger"></span>
 													</div>
 
 												</div>
@@ -674,9 +706,10 @@
         const customerAddress = form.customerAddress;
         const customerMobiphone = form.customerMobiphone;
         const customerEmail = form.customerEmail;
+        const customerAdmin = form.customerAdmin;
 
         // Clear tất cả lỗi trước
-        [username, password, customerName, customerGender, customerDate, customerAddress, customerMobiphone, customerEmail].forEach(clearError);
+        [username, password, customerName, customerGender, customerDate, customerAddress, customerMobiphone, customerEmail, customerAdmin].forEach(clearError);
 
         // Kiểm tra trống
         if (!username.value.trim()) setError(username, "Tên đăng nhập không được để trống.");
@@ -687,6 +720,7 @@
         if (!customerGender.value) setError(customerGender, "Vui lòng chọn giới tính.");
         if (!customerDate.value) setError(customerDate, "Vui lòng chọn ngày sinh.");
         if (!customerAddress.value.trim()) setError(customerAddress, "Địa chỉ không được để trống.");
+        
 
         // Số điện thoại
         const phonePattern = /^[0-9]{9,11}$/;
@@ -697,14 +731,15 @@
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!customerEmail.value.trim()) setError(customerEmail, "Email không được để trống.");
         else if (!emailPattern.test(customerEmail.value)) setError(customerEmail, "Email không đúng định dạng.");
-
+        
+        if (!customerAdmin.value) setError(customerAdmin, "Vui lòng chọn phân quyền.");
         if (!isValid) {
             e.preventDefault(); // Ngăn submit nếu không hợp lệ
         }
     });
 });
 </script>
-<!-- js xem thông tin -->
+	<!-- js xem thông tin -->
 	<script>
 	 const viewCustomerModal = document.getElementById('viewCustomerModal');
 	    viewCustomerModal.addEventListener('show.bs.modal', function (event) {
@@ -712,16 +747,17 @@
 	        
 	        document.getElementById('viewCustomerId').value = button.getAttribute('data-id');
 	        document.getElementById('viewCustomerUsername').value = button.getAttribute('data-username');
-	        document.getElementById('viewCustomerPassword').value = button.getAttribute('data-password');
+	        /* document.getElementById('viewCustomerPassword').value = button.getAttribute('data-password'); */
 	        document.getElementById('viewCustomerName').value = button.getAttribute('data-name');
 	        document.getElementById('viewCustomerGender').value = button.getAttribute('data-gender');
 	        document.getElementById('viewCustomerDate').value = button.getAttribute('data-date');
 	        document.getElementById('viewCustomerAddress').value = button.getAttribute('data-address');
 	        document.getElementById('viewCustomerPhone').value = button.getAttribute('data-phone');
 	        document.getElementById('viewCustomerEmail').value = button.getAttribute('data-email');
+	        document.getElementById('viewCustomerAdmin').value = button.getAttribute('data-isadmin');
 	    });
 </script>
-<!-- js đẩy dữ liệu lên form sửa -->
+	<!-- js đẩy dữ liệu lên form sửa -->
 	<script>
 	
 const editCustomerModal = document.getElementById('editCustomerModal');
@@ -738,6 +774,7 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
   const customerAddress = button.getAttribute('data-address');
   const customerMobiphone = button.getAttribute('data-phone');
   const customerEmail = button.getAttribute('data-email');
+  const customerAdmin = button.getAttribute('data-isadmin');
  
   // Gán dữ liệu vào các input trong modal
   document.getElementById('editCustomerId').value = customerId || '';
@@ -749,6 +786,7 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
   document.getElementById('editCustomerAddress').value = customerAddress || '';
   document.getElementById('editCustomerMobiphone').value = customerMobiphone || '';
   document.getElementById('editCustomerEmail').value = customerEmail || '';
+  document.getElementById('editCustomerAdmin').value = customerAdmin || 'Admin';
  
 });</script>
 	<!-- js chức năng xóa -->
@@ -781,6 +819,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const address = document.getElementById('editCustomerAddress');
     const phone = document.getElementById('editCustomerMobiphone');
     const email = document.getElementById('editCustomerEmail');
+    const admin = document.getElementById('editCustomerAdmin');
   
 
     // Kiểm tra không để trống

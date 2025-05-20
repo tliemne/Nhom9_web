@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import database.CustomerDAO;
 import model.Brand;
 import model.Customer;
@@ -23,7 +25,7 @@ import model.Customer;
  * Servlet implementation class userController
  */
 
-@WebServlet(name = "CustomerServlet", urlPatterns = {"/quanly-tk", "/addCustomer", "/editCustomer", "/deleteCustomer"})
+@WebServlet(name = "CustomerServlet", urlPatterns = {"/quanly-tk", "/addCustomer", "/editCustomer", "/deleteCustomer"},loadOnStartup = 1)
 
 public class userController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -31,6 +33,7 @@ public class userController extends HttpServlet {
   private CustomerDAO customerDao;
   public void init() {
 	  customerDao = new CustomerDAO(); 
+	  customerDao.encryptExistingPasswords();
   }
     public userController() {
         super();
@@ -48,6 +51,7 @@ public class userController extends HttpServlet {
 		    request.setAttribute("message", msg);
 		    session.removeAttribute("message"); // xóa luôn tại đây
 		}
+		
 		
 		ArrayList<Customer> listCustomer = customerDao.selectAll();
 		
@@ -94,13 +98,16 @@ public class userController extends HttpServlet {
 		 	String customerId = customerDao.generateNextCustomerId();
 	        String username = request.getParameter("username");
 	        String password = request.getParameter("password");
+	        
+	       
 	        String customerName = request.getParameter("customerName");
 	        String customerGender = request.getParameter("customerGender");
 	        String customerDate = request.getParameter("customerDate");
 	        String customerAddress = request.getParameter("customerAddress");
 	        String customerMobiphone = request.getParameter("customerMobiphone");
 	        String customerEmail = request.getParameter("customerEmail");
-
+	        String customerAdmin = request.getParameter("customerAdmin");  
+	        
 	        Customer customer = new Customer();
 	        customer.setCustomerId(customerId);
 	        customer.setUsername(username);
@@ -119,6 +126,7 @@ public class userController extends HttpServlet {
 	        customer.setCustomerAddress(customerAddress);
 	        customer.setCustomerMobiphone(customerMobiphone);
 	        customer.setCustomerEmail(customerEmail);
+	        customer.setIsAdmin(customerAdmin);
 
 	        int result = customerDao.insert(customer);
 			if (result > 0) {
@@ -136,12 +144,15 @@ public class userController extends HttpServlet {
 	    	String id = request.getParameter("customerId");
 	        String username = request.getParameter("username");
 	        String password = request.getParameter("password");
+	        
+		       
 	        String name = request.getParameter("customerName");
 	        String gender = request.getParameter("customerGender");
 	        String date = request.getParameter("customerDate");
 	        String address = request.getParameter("customerAddress");
 	        String phone = request.getParameter("customerMobiphone");
 	        String email = request.getParameter("customerEmail");
+	        String admin = request.getParameter("customerAdmin");
 	       
 	       
 
@@ -155,6 +166,7 @@ public class userController extends HttpServlet {
 	        customer.setCustomerAddress(address);
 	        customer.setCustomerMobiphone(phone);
 	        customer.setCustomerEmail(email);
+	        customer.setIsAdmin(admin);
 	       
 	        
 

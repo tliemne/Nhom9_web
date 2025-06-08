@@ -24,7 +24,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 			Connection con = JDBCUtil.getConnection();
 			
 			// Bước 2: Tạo ra đối tượng statement
-			String sql = "SELECT * FROM customer";
+			String sql = "SELECT * FROM customer WHERE is_deleted = FALSE";
 			PreparedStatement st = con.prepareStatement(sql);
 			
 			// Bước 3: Thực thi một câu lệnh SQL
@@ -44,7 +44,8 @@ public class CustomerDAO implements DAOInterface<Customer>{
 				String customerMobiphone = rs.getString("customermobiphone");
 				String customerEmail = rs.getString("customeremail");
 				String isAdmin = rs.getString("customeradmin");
-				Customer customer = new Customer(customerId, userName, passWord, customerName, customerGender, customerDate, customerAddress, customerMobiphone, customerEmail,isAdmin);
+				boolean isDeleted = rs.getBoolean("is_deleted");
+				Customer customer = new Customer(customerId, userName, passWord, customerName, customerGender, customerDate, customerAddress, customerMobiphone, customerEmail,isAdmin,isDeleted);
 				ketQua.add(customer);
 				
 			}
@@ -87,7 +88,8 @@ public class CustomerDAO implements DAOInterface<Customer>{
 				String customerMobiphone = rs.getString("customermobiphone");
 				String customerEmail = rs.getString("customeremail");
 				String isAdmin = rs.getString("customeradmin");
-				Customer customer = new Customer(customerId, userName, passWord, customerName,customerGender, customerDate,customerAddress,customerMobiphone,customerEmail,isAdmin);
+				boolean isDeleted = rs.getBoolean("is_deleted");
+				Customer customer = new Customer(customerId, userName, passWord, customerName,customerGender, customerDate,customerAddress,customerMobiphone,customerEmail,isAdmin,isDeleted);
 				break;
 			}
 			
@@ -112,8 +114,8 @@ public class CustomerDAO implements DAOInterface<Customer>{
 	        }
 			
 			// Bước 2: tạo ra đối tượng statement
-			String sql = "INSERT INTO customer (customerid, username, password,customername,customergender,customerdate,customeraddress,customermobiphone,customeremail,customeradmin) "+
-					" VALUES (?,?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO customer (customerid, username, password,customername,customergender,customerdate,customeraddress,customermobiphone,customeremail,customeradmin,is_deleted) "+
+					" VALUES (?,?,?,?,?,?,?,?,?,?,FALSE)";
 			
 			PreparedStatement st = con.prepareStatement(sql);
 			st.setString(1, t.getCustomerId());
@@ -126,6 +128,7 @@ public class CustomerDAO implements DAOInterface<Customer>{
 			st.setString(8, t.getCustomerMobiphone());
 			st.setString(9, t.getCustomerEmail());
 			st.setString(10,t.getIsAdmin());
+			
 			
 			// Bước 3: thực thi câu lệnh SQL
 			ketQua = st.executeUpdate();
@@ -290,7 +293,80 @@ public class CustomerDAO implements DAOInterface<Customer>{
 	        }
 	    }
 	}
-	
+	public ArrayList<Customer> selectDeleted() {
+	    ArrayList<Customer> ketQua = new ArrayList<>();
+	    try {
+	        Connection con = JDBCUtil.getConnection();
+
+	        String sql = "SELECT * FROM customer WHERE is_deleted = TRUE";
+	        PreparedStatement st = con.prepareStatement(sql);
+	        ResultSet rs = st.executeQuery();
+
+	        while (rs.next()) {
+	            String customerId = rs.getString("customerid");
+	            String userName = rs.getString("username");
+	            String passWord = rs.getString("password");
+	            String customerName = rs.getString("customername");
+	            String customerGender = rs.getString("customergender");
+	            Date customerDate = rs.getDate("customerdate");
+	            String customerAddress = rs.getString("customeraddress");
+	            String customerMobiphone = rs.getString("customermobiphone");
+	            String customerEmail = rs.getString("customeremail");
+	            String isAdmin = rs.getString("customeradmin");
+	            boolean isDeleted = rs.getBoolean("is_deleted"); // <-- thêm dòng này
+
+	            Customer customer = new Customer(customerId, userName, passWord, customerName, customerGender, customerDate, customerAddress, customerMobiphone, customerEmail, isAdmin,isDeleted);
+	            
+
+	            ketQua.add(customer);
+	        }
+
+	        JDBCUtil.closeConnection(con);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return ketQua;
+	}
+	public int softDeleteById(String customerId) {
+	    int ketQua = 0;
+	    String sql = "UPDATE customer SET is_deleted = TRUE WHERE customerid = ?";
+
+	    try (Connection con = JDBCUtil.getConnection(); PreparedStatement st = con.prepareStatement(sql)) {
+	        st.setString(1, customerId);
+	        ketQua = st.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return ketQua;
+	}
+
+	// Khôi phục khách hàng bị xóa bằng ID
+	public int restoreById(String customerId) {
+	    int ketQua = 0;
+	    String sql = "UPDATE customer SET is_deleted = FALSE WHERE customerid = ?";
+
+	    try (Connection con = JDBCUtil.getConnection(); PreparedStatement st = con.prepareStatement(sql)) {
+	        st.setString(1, customerId);
+	        ketQua = st.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return ketQua;
+	}
+
+	// Xóa vĩnh viễn khách hàng bằng ID
+	public int deleteById(String customerId) {
+	    int ketQua = 0;
+	    String sql = "DELETE FROM customer WHERE customerid = ? AND is_deleted = TRUE";
+
+	    try (Connection con = JDBCUtil.getConnection(); PreparedStatement st = con.prepareStatement(sql)) {
+	        st.setString(1, customerId);
+	        ketQua = st.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return ketQua;
+	}
 	/*
 	 * public static void main(String[] args) { CustomerDAO bd = new CustomerDAO();
 	 * 

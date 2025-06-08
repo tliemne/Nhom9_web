@@ -14,13 +14,13 @@ public class Customer {
 	private String customerMobiphone;
 	private String customerEmail;
 	private String isAdmin;
-	
+	private boolean isDeleted;
 	public Customer() {
 		super();
 	}
 
 	public Customer(String customerId, String username, String password, String customerName, String customerGender,
-			Date customerDate, String customerAddress, String customerMobiphone, String customerEmail,String isAdmin) {
+			Date customerDate, String customerAddress, String customerMobiphone, String customerEmail,String isAdmin, boolean isDeleted) {
 		super();
 		this.customerId = customerId;
 		this.username = username;
@@ -32,6 +32,7 @@ public class Customer {
 		this.customerMobiphone = customerMobiphone;
 		this.customerEmail = customerEmail;
 		this.isAdmin = isAdmin;
+		this.isDeleted = isDeleted;
 	}
 
 	public String getCustomerId() {
@@ -112,6 +113,13 @@ public class Customer {
 	    public void setIsAdmin(String isAdmin) {
 	        this.isAdmin = isAdmin;
 	    }
+	  public boolean isDeleted() {
+		  return isDeleted;
+	  }
+	  public void setIsDeleted(boolean isDeleted)
+	  {
+		  this.isDeleted = isDeleted;
+	  }
 	@Override
 	public int hashCode() {
 		return Objects.hash(customerId);

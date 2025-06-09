@@ -1,70 +1,126 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Thùng Rác Tài Khoản</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<title>USER - NHOM 9</title>
+<meta content="" name="description">
+<meta content="" name="keywords">
+
+<!-- Favicons -->
+<link
+	href="${pageContext.request.contextPath}/assets/adimgs/favicon.png"
+	rel="icon">
+<link
+	href="${pageContext.request.contextPath}/assets/adimgs/apple-touch-icon.png"
+	rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link
+	href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+	rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link
+	href="${pageContext.request.contextPath}/assets/adcss/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/assets/adcss/bootstrap-icons/bootstrap-icons.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/assets/vendor/boxicons/css/boxicons.min.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/assets/vendor/quill/quill.snow.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/assets/vendor/quill/quill.bubble.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/assets/vendor/remixicon/remixicon.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/assets/vendor/simple-datatables/style.css"
+	rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="${pageContext.request.contextPath}/assets/adcss/style.css"
+	rel="stylesheet">
+
+<!-- =======================================================
+  * Template Name: NiceAdmin
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
+
 <body>
-    <div class="container mt-5">
-        <h2 class="mb-4">🗑️ Thùng rác - Tài khoản đã xóa</h2>
+	<h3>Danh sách tài khoản đã xóa</h3>
 
-        <a href="${pageContext.request.contextPath}/customer" class="btn btn-secondary mb-3">
-            <i class="ri-arrow-left-line"></i> Quay lại danh sách
-        </a>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th class="text-center">Mã người dùng</th>
+				<th class="text-center">Tên đăng nhập</th>
+				<th class="text-center">Tên khách hàng</th>
+				<th class="text-center">Giới tính</th>
+				<th class="text-center">Địa chỉ</th>
+				
+				
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach var="customer" items="${deletedCustomers}">
+				<tr>
+					<td>${customer.customerId}</td>
+					<td>${customer.username}</td>
+					<%-- <td>${customer.password}</td> --%>
+					<td>${customer.customerName}</td>
+					<td>${customer.customerGender}</td>
+					<%-- <td>${customer.customerDate}</td> --%>
+					<td>${customer.customerAddress}</td>
+					<%-- 	<td>${customer.customerMobiphone}</td>
+											<td>${customer.customerEmail}</td> --%>
+					
+					<td>
+						<form action="quanly-tk" method="post" style="display: inline;">
+							<input type="hidden" name="customerId"
+								value="${customer.customerId}"> <input type="hidden"
+								name="action" value="restore">
+							<button type="submit">Restore</button>
+						</form>
+						<form action="quanly-tk" method="post" style="display: inline;">
+							<input type="hidden" name="customerId"
+								value="${customer.customerId}"> <input type="hidden"
+								name="action" value="hardDelete">
+							<button type="submit"
+								onclick="return confirm('Bạn chắc chắn muốn xóa vĩnh viễn?');">Xóa
+								vĩnh viễn</button>
+						</form>
+					</td>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</table>
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark text-center">
-                <tr>
-                    <th>ID</th>
-                    <th>Tên đăng nhập</th>
-                    <th>Họ tên</th>
-                    <th>Giới tính</th>
-                    <th>Địa chỉ</th>
-                    <th>Quyền Admin</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:forEach var="customer" items="${listCustomer}">
-                    <tr class="text-center">
-                        <td>${customer.customerId}</td>
-                        <td>${customer.username}</td>
-                        <td>${customer.customerName}</td>
-                        <td>${customer.customerGender}</td>
-                        <td>${customer.customerAddress}</td>
-                        <td>${customer.isAdmin ? "✔" : "✖"}</td>
-                        <td>
-                            <!-- Khôi phục -->
-                            <form action="CustomerController" method="post" style="display:inline-block;">
-                                <input type="hidden" name="action" value="restore" />
-                                <input type="hidden" name="customerId" value="${customer.customerId}" />
-                                <button type="submit" class="btn btn-success btn-sm" title="Khôi phục">
-                                    <i class="ri-arrow-go-back-line"></i>
-                                </button>
-                            </form>
+	<div style="text-align: center; margin: 20px 0;">
+    <form action="quanly-tk" method="get">
+        <input type="hidden" name="action" value="view" />
+        <button type="submit" class="btn btn-primary">← Quay lại danh sách tài khoản</button>
+    </form>
+</div>
 
-                            <!-- Xóa vĩnh viễn -->
-                            <form action="CustomerController" method="post" style="display:inline-block;"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản này không?');">
-                                <input type="hidden" name="action" value="deletePermanent" />
-                                <input type="hidden" name="customerId" value="${customer.customerId}" />
-                                <button type="submit" class="btn btn-danger btn-sm" title="Xóa vĩnh viễn">
-                                    <i class="ri-delete-bin-2-fill"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+</body>
+
 </html>

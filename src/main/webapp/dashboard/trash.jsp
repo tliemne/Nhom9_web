@@ -64,60 +64,54 @@
 </head>
 
 <body>
-	<h3>Danh sách tài khoản đã xóa</h3>
+	<h3 class="mb-4 text-center" >Danh sách tài khoản đã xóa</h3>
 
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th class="text-center">Mã người dùng</th>
-				<th class="text-center">Tên đăng nhập</th>
-				<th class="text-center">Tên khách hàng</th>
-				<th class="text-center">Giới tính</th>
-				<th class="text-center">Địa chỉ</th>
-				
-				
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach var="customer" items="${deletedCustomers}">
-				<tr>
-					<td>${customer.customerId}</td>
-					<td>${customer.username}</td>
-					<%-- <td>${customer.password}</td> --%>
-					<td>${customer.customerName}</td>
-					<td>${customer.customerGender}</td>
-					<%-- <td>${customer.customerDate}</td> --%>
-					<td>${customer.customerAddress}</td>
-					<%-- 	<td>${customer.customerMobiphone}</td>
-											<td>${customer.customerEmail}</td> --%>
-					
-					<td>
-						<form action="quanly-tk" method="post" style="display: inline;">
-							<input type="hidden" name="customerId"
-								value="${customer.customerId}"> <input type="hidden"
-								name="action" value="restore">
-							<button type="submit">Restore</button>
-						</form>
-						<form action="quanly-tk" method="post" style="display: inline;">
-							<input type="hidden" name="customerId"
-								value="${customer.customerId}"> <input type="hidden"
-								name="action" value="hardDelete">
-							<button type="submit"
-								onclick="return confirm('Bạn chắc chắn muốn xóa vĩnh viễn?');">Xóa
-								vĩnh viễn</button>
-						</form>
-					</td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
+<table class="table table-bordered table-hover align-middle text-center">
+    <thead class="table-secondary">
+        <tr>
+            <th>Mã người dùng</th>
+            <th>Tên đăng nhập</th>
+            <th>Tên khách hàng</th>
+            <th>Giới tính</th>
+            <th>Địa chỉ</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        <c:forEach var="customer" items="${deletedCustomers}">
+            <tr>
+                <td>${customer.customerId}</td>
+                <td>${customer.username}</td>
+                <td>${customer.customerName}</td>
+                <td>${customer.customerGender}</td>
+                <td>${customer.customerAddress}</td>
+                <td>
+                    <form action="quanly-tk" method="post" style="display: inline;">
+                        <input type="hidden" name="customerId" value="${customer.customerId}">
+                        <input type="hidden" name="action" value="restore">
+                        <button type="submit" class="btn btn-success btn-sm px-3">Restore</button>
+                    </form>
+                    <form action="quanly-tk" method="post" style="display: inline;">
+                        <input type="hidden" name="customerId" value="${customer.customerId}">
+                        <input type="hidden" name="action" value="hardDelete">
+                        <button type="submit" class="btn btn-danger btn-sm px-3"
+                                onclick="return confirm('Bạn chắc chắn muốn xóa vĩnh viễn?');">Xóa vĩnh viễn</button>
+                    </form>
+                </td>
+            </tr>
+        </c:forEach>
+    </tbody>
+</table>
 
-	<div style="text-align: center; margin: 20px 0;">
-    <form action="quanly-tk" method="get">
+<div class="text-center my-4">
+    <form action="quanly-tk" method="get" style="display: inline;">
         <input type="hidden" name="action" value="view" />
-        <button type="submit" class="btn btn-primary">← Quay lại danh sách tài khoản</button>
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-arrow-left"></i>  Quay lại danh sách tài khoản
+        </button>
     </form>
 </div>
+
 
 </body>
 

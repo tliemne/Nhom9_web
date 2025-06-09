@@ -6,6 +6,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,15 +31,26 @@ import model.Customer;
 
 public class userController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private ScheduledExecutorService scheduler;
        
   private CustomerDAO customerDao;
   public void init() {
 	  customerDao = new CustomerDAO(); 
 	  customerDao.encryptExistingPasswords();
+	  scheduler = Executors.newSingleThreadScheduledExecutor();
+      scheduler.scheduleAtFixedRate(() -> {
+          int deletedCount = customerDao.autoDeleteOldRecords();
+          System.out.println("Auto xóa cứng " + deletedCount + " bản ghi");
+      }, 0, 24, TimeUnit.HOURS);
   }
     public userController() {
         super();
        
+    }
+    public void destroy() {
+        if (scheduler != null) {
+            scheduler.shutdownNow();
+        }
     }
 
 

@@ -18,14 +18,13 @@ import javax.servlet.http.HttpSession;
 import org.mindrot.jbcrypt.BCrypt;
 
 import database.CustomerDAO;
-import model.Brand;
 import model.Customer;
 
 /**
  * Servlet implementation class userController
  */
 
-@WebServlet(name = "CustomerServlet", urlPatterns = {"/quanly-tk","/trash", "/addCustomer", "/editCustomer", "/deleteCustomer"},loadOnStartup = 1)
+@WebServlet(name = "CustomerServlet", urlPatterns = {"/quanly-tk", "/addCustomer", "/editCustomer", "/deleteCustomer"},loadOnStartup = 1)
 
 public class userController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -70,7 +69,9 @@ public class userController extends HttpServlet {
 		
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charset=UTF-8");
+
 		String action = request.getParameter("action"); // Lấy action từ form hoặc URL
+
         if (action == null) action = ""; // tránh null
 
         switch(action) {
@@ -83,18 +84,11 @@ public class userController extends HttpServlet {
             case "delete":
 				handleDelete(request, response);
                 break;
-            case "restore":
-                handleRestore(request, response);
-                break;
-            case "forceDelete":
-                handleForceDelete(request, response);
-                break;
             default:
                 // Nếu không có action hợp lệ, quay lại trang danh sách
                 response.sendRedirect("quanly-tk");
                 break;
         }
-       
 	    }
 
 	 private void handleAdd(HttpServletRequest request, HttpServletResponse response) 
@@ -186,37 +180,15 @@ public class userController extends HttpServlet {
 	    private void handleDelete(HttpServletRequest request, HttpServletResponse response) 
 	            throws ServletException, IOException {
 	    	String id = request.getParameter("customerId");
-	        int result = customerDao.softDeleteById(id);
-	     
 	        
+	        Customer customer = new Customer();
+	        customer.setCustomerId(id);
+	        
+	        int result = customerDao.delete(customer);
 	        if (result > 0) {
-	            request.getSession().setAttribute("message", "Tài khoản đã được đưa vào thùng rác.");
-	        } else {
-	            request.getSession().setAttribute("message", "Không thể xóa tài khoản.");
+	            request.getSession().setAttribute("message", "Xóa tài khoản thành công!");
 	        }
-	        response.sendRedirect("quanly-tk");
-	    }
-	    private void handleRestore(HttpServletRequest request, HttpServletResponse response)
-	            throws ServletException, IOException {
-	    	String id = request.getParameter("customerId");
-	        int result = customerDao.restoreById(id);
-	        if (result > 0) {
-	            request.getSession().setAttribute("message", "Khôi phục tài khoản thành công.");
-	        } else {
-	            request.getSession().setAttribute("message", "Không thể khôi phục tài khoản.");
-	        }
-	        response.sendRedirect("trash");
-	    }
 
-	    private void handleForceDelete(HttpServletRequest request, HttpServletResponse response)
-	            throws ServletException, IOException {
-	    	 String id = request.getParameter("customerId");
-	    	    int result = customerDao.deleteById(id);
-	    	    if (result > 0) {
-	    	        request.getSession().setAttribute("message", "Đã xóa tài khoản vĩnh viễn.");
-	    	    } else {
-	    	        request.getSession().setAttribute("message", "Không thể xóa tài khoản.");
-	    	    }
-	    	    response.sendRedirect("trash");
+	        response.sendRedirect("quanly-tk");
 	    }
 	}

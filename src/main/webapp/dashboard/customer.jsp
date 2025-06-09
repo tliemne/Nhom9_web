@@ -1,16 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-<c:if test="${not empty sessionScope.message}">
-    <c:set var="message" value="${sessionScope.message}" />
-    <c:remove var="message" scope="session" />
-</c:if>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
@@ -78,9 +72,7 @@
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 		  const modalMessageElem = document.getElementById('modalMessage');
-		  const message = modalMessageElem && modalMessageElem.textContent 
-		    ? modalMessageElem.textContent.trim() 
-		    : "";
+		  const message = modalMessageElem ? modalMessageElem.textContent.trim() : "";
 		  if(message) {
 		    var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
 		    messageModal.show();
@@ -88,7 +80,6 @@
 		});
 		
 	</script>
-	
 
 	<!-- ======= Nội dung chính của trang ======= -->
 	<main id="main" class="main">
@@ -113,11 +104,6 @@
 							<h5 class="card-title">Danh sách tài khoản</h5>
 
 							<div class="text-end mb-3">
-								<!-- Nút Thùng rác (đặt bên phải nút Thêm mới) -->
-								<a href="${pageContext.request.contextPath}/trash"
-									class="btn btn-dark ms-2"> <!-- Sử dụng màu tối để phân biệt -->
-									<i class="ri-delete-bin-6-fill"></i> Thùng rác <!-- Hiển thị số lượng đã xóa -->
-								</a>
 								<button type="button" class="btn btn-success"
 									data-bs-toggle="modal" data-bs-target="#addCustomerModal">
 									<i class="ri-add-circle-fill"> Thêm mới</i>
@@ -127,7 +113,7 @@
 							<!-- Table with stripped rows -->
 							<table class="table datatable">
 								<thead>
-									<tr>
+									<tr >
 										<th class="text-center">Mã người dùng</th>
 										<th class="text-center">Tên đăng nhập</th>
 										<th class="text-center">Tên khách hàng</th>
@@ -143,7 +129,7 @@
 								<tbody>
 									<c:forEach var="customer" items="${listCustomer}">
 										<tr class="text-center">
-											<td>${customer.customerId}</td>
+											<td >${customer.customerId}</td>
 											<td>${customer.username}</td>
 											<%-- <td>${customer.password}</td> --%>
 											<td>${customer.customerName}</td>
@@ -580,40 +566,44 @@
 								</div>
 							</div>
 							<!-- Modal Xóa Thông Tin tài khoản  -->
-							<!-- Modal Xóa tương đối -->
-<div class="modal fade" id="deleteCustomerModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <form action="quanly-tk" method="post">
-                <!-- Form submit về servlet chính -->
-                <div class="modal-header bg-danger text-white rounded-top-4">
-                    <h5 class="modal-title">
-                        <i class="ri-delete-bin-line me-2"></i> Chuyển vào thùng rác
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+							<div class="modal fade" id="deleteCustomerModal" tabindex="-1"
+								aria-labelledby="deleteCustomerModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered modal-md">
+									<div class="modal-content border-0 shadow-lg rounded-4">
+										<form action="deleteCustomer" method="post"
+											id="deleteCustomerForm">
+											<div class="modal-header bg-danger text-white rounded-top-4">
+												<h5 class="modal-title" id="deleteCustomerModalLabel">
+													<i class="ri-delete-bin-line me-2"></i>Xác nhận xóa tài
+													khoản
+												</h5>
+												<button type="button" class="btn-close btn-close-white"
+													data-bs-dismiss="modal" aria-label="Đóng"></button>
 
-                <div class="modal-body px-4 pt-4">
-                    <p class="text-center">
-                        <i class="ri-information-line me-2"></i> Tài khoản sẽ được chuyển vào thùng rác và có thể khôi phục sau.
-                    </p>
-                    <input type="hidden" name="action" value="delete" />
-                    <input type="hidden" name="customerId" id="deleteCustomerId" />
-                </div>
+												<!-- Hidden cho chức năng xóa -->
+												<input type="hidden" name="action" value="delete">
+											</div>
 
-                <div class="modal-footer px-4 pb-4">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="ri-close-line"></i> Hủy
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="ri-delete-bin-6-line"></i> Xác nhận
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+											<div class="modal-body px-4 pt-4">
+												<p>Bạn có chắc chắn muốn xóa tài khoản không?</p>
+												<!-- Input ẩn để gửi customerId cần xóa -->
+												<input type="hidden" name="customerId" id="deleteCustomerId"
+													value="">
+											</div>
 
+											<div class="modal-footer px-4 pb-4">
+												<button type="button" class="btn btn-secondary"
+													data-bs-dismiss="modal">
+													<i class="ri-close-line"></i> Hủy
+												</button>
+												<button type="submit" class="btn btn-danger">
+													<i class="ri-delete-bin-6-line"></i>Đồng ý
+												</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
 							<!-- Modal thông báo thành công thêm, sửa, xóa -->
 							<!-- Modal Thông báo -->
 							<div class="modal fade" id="messageModal" tabindex="-1"
@@ -799,25 +789,15 @@ editCustomerModal.addEventListener('show.bs.modal', function (event) {
   document.getElementById('editCustomerAdmin').value = customerAdmin || 'Admin';
  
 });</script>
-	
-<!-- JS để mở modal và gán customerId -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const deleteButtons = document.querySelectorAll('.deleteCustomerBtn');
-    const inputDeleteId = document.getElementById('deleteCustomerId');
-    const deleteModalElement = document.getElementById('deleteCustomerModal');
-    const deleteModal = new bootstrap.Modal(deleteModalElement);
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const customerId = this.getAttribute('data-customer-id');
-            inputDeleteId.value = customerId;
-            deleteModal.show();
-        });
-    });
-});
+	<!-- js chức năng xóa -->
+	<script>
+	document.querySelectorAll('.deleteCustomerBtn').forEach(button => {
+		  button.addEventListener('click', function () {
+		    const customerId = this.getAttribute('data-customer-id');
+		    document.getElementById('deleteCustomerId').value = customerId;
+		  });
+		});
 </script>
-
 	<!-- js điều kiện của sửa -->
 	<script>
 document.addEventListener("DOMContentLoaded", function () {
